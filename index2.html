@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AnyAlt Message Generator</title>
+
+    <!-- Favicon (.png) -->
+    <link rel="icon" href="favicon.png" type="image/png" />
+
+    <!-- Import or use local font -->
+    <style>
+      @font-face {
+        font-family: "Rethink Sans";
+        src: url("rethink-sans.woff2") format("woff2"),
+          url("rethink-sans.woff") format("woff");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Rethink Sans", Arial, sans-serif;
+        background: url("BG.png") no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: white;
+      }
+
+      .container {
+        background-color: rgba(0, 0, 0, 0.8); /* Updated opacity */
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+      }
+
+      /* Logo styling */
+      .logo {
+        margin-bottom: 20px;
+      }
+
+      .logo img {
+        width: 200px; /* Increased size */
+      }
+
+      h2 {
+        font-size: 26px;
+        margin-bottom: 20px;
+        color: white;
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+        text-align: left;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        font-size: 14px;
+        color: white;
+      }
+
+      .input-group input,
+      .input-group select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 90px; /* Rounded inputs */
+        border: none;
+        font-size: 16px;
+      }
+
+      .input-group select {
+        padding-right: 35px;
+        background-color: #fff;
+        color: black;
+      }
+
+      .input-group input:focus,
+      .input-group select:focus {
+        outline: none;
+      }
+
+      .btn {
+        background-color: #c44de7;
+        background-image: linear-gradient(90deg, #c44de7, #61a0ff);
+        color: white;
+        padding: 15px 25px;
+        border: none;
+        border-radius: 90px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 600;
+        margin-top: 10px;
+        transition: transform 0.2s ease, background-color 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn:active {
+        transform: scale(0.95);
+      }
+
+      .buttons-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+
+      #copyButton,
+      #redirectButton {
+        display: none;
+        color: white;
+        padding: 15px 25px;
+        border: none;
+        border-radius: 90px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        width: 48%;
+        transition: transform 0.2s ease, background-color 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      #copyButton {
+        background-color: #4caf50;
+      }
+
+      #copyButton:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      #copyButton:active {
+        transform: scale(0.95);
+      }
+
+      #redirectButton {
+        background-color: #007bff;
+      }
+
+      #redirectButton:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      #redirectButton:active {
+        transform: scale(0.95);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Logo section -->
+      <div class="logo">
+        <img src="logo-black.svg" alt="AnyAlt Logo" />
+      </div>
+
+      <h2>AnyAlt Message Generator</h2>
+
+      <div class="input-group">
+        <label for="tokenName">Enter Token Name:</label>
+        <input type="text" id="tokenName" placeholder="Token Name" />
+      </div>
+
+      <div class="input-group">
+        <label for="contractAddress">Enter Contract Address:</label>
+        <input type="text" id="contractAddress" placeholder="0x1234..." />
+      </div>
+
+      <div class="input-group">
+        <label for="chainId">Select Chain:</label>
+        <select id="chainId">
+          <option value="" disabled selected>Select</option>
+          <option value="ethereum">Ethereum</option>
+          <option value="arbitrum">Arbitrum</option>
+          <option value="avalanche">Avalanche</option>
+          <option value="base">Base</option>
+          <option value="bnb-chain">Binance</option>
+          <option value="fantom">Fantom</option>
+          <option value="gnosis">Gnosis</option>
+          <option value="klaytn">Klaytn</option>
+          <option value="optimism">Optimism</option>
+          <option value="polygon">Polygon</option>
+          <option value="zksync-era">ZkSync Era</option>
+          <option value="solana">Solana</option>
+        </select>
+      </div>
+
+      <button class="btn" onclick="generateMessage()">Generate Message</button>
+
+      <div class="buttons-row">
+        <button id="copyButton" onclick="copyToClipboard()">
+          Copy Message
+        </button>
+        <button id="redirectButton" onclick="redirectToLink()">
+          Go to Link
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function generateMessage() {
+        var tokenName = document.getElementById("tokenName").value;
+        var contractAddress = document.getElementById("contractAddress").value;
+        var chainId = document.getElementById("chainId").value;
+
+        if (!tokenName || !contractAddress || !chainId) {
+          alert("Please fill in all fields.");
+          return;
+        }
+
+        var url = `https://www.anyalt.finance/?type=f2c&tokenOut=${contractAddress}&chainId=${chainId}`;
+        var message = `$${tokenName} is now available for direct fiat purchase on AnyAlt:\n\nVisit: ${url}\n\nOR\n\nStep 1: Visit http://anyalt.finance\nStep 2: Search for $${tokenName} or input contract address\nStep 3: Connect wallet and purchase $${tokenName}`;
+
+        document.getElementById("copyButton").style.display = "block";
+        document.getElementById("redirectButton").style.display = "block";
+
+        return message;
+      }
+
+      function copyToClipboard() {
+        var message = generateMessage();
+        navigator.clipboard
+          .writeText(message)
+          .then(function () {
+            alert("Message copied to clipboard!");
+          })
+          .catch(function (error) {
+            console.error("Copy failed!", error);
+            alert("Failed to copy the message.");
+          });
+      }
+
+      function redirectToLink() {
+        var url = document.getElementById("contractAddress").value;
+        if (url) {
+          var redirectUrl = `https://www.anyalt.finance/?type=f2c&tokenOut=${url}&chainId=${
+            document.getElementById("chainId").value
+          }`;
+          window.open(redirectUrl, "_blank");
+        } else {
+          alert("No link generated yet.");
+        }
+      }
+    </script>
+  </body>
+</html>
